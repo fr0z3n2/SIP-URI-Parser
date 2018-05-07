@@ -26,7 +26,7 @@ The key is understanding the delimiting characters as shown above.
 The Code <a name="thecode"></a>
 ==============
 
-Below is how you would call the object in the code and read the data.
+Below is how to read the data of the SIP URI.
 
 ```Java
 String testUri = "sip:alice;day=tuesday@atlanta.com"
