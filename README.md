@@ -19,9 +19,19 @@ The SIP URI scheme is a Uniform Resource Identifier for the Session Initiation
 Protocol. SIP is a multimedia protocol used for directing where a communication
 takes place.
 
-The structure is as follows: sip:user:password@host:port;uri-parameters?headers
+__The structure is as follows:__ sip:user:password@host:port;uri-parameters?headers
 
 The key is understanding the delimiting characters as shown above.
 
 The Code <a name="thecode"></a>
 ==============
+
+Below is how you would call the object in the code and read the data.
+
+```Java
+String testUri = "sip:alice;day=tuesday@atlanta.com"
+
+// Declaration and instantiation of the SipUri object.
+SipUri sipUri = new SipUri(testUri);
+System.out.println(sipUri.toString());
+```

@@ -55,7 +55,7 @@ public class Main {
         String testUri8 = "sip:alice;day=tuesday@atlanta.com";
 
         // Declaration and instantiation of the SipUri object.
-        SipUri sipUri = new SipUri(testUri7);
+        SipUri sipUri = new SipUri(testUri8);
         System.out.println(sipUri.toString());
     }
 }
