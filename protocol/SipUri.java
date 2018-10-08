@@ -1,6 +1,8 @@
 package protocol;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * This class holds the structure of a SipUri object.
@@ -17,7 +19,7 @@ import java.util.Arrays;
  *
  * @author Logan Stanfield
  * @since 04/12/2018
- * @version 0.1.0
+ * @version 0.2.0
  */
 public class SipUri {
 
@@ -42,7 +44,7 @@ public class SipUri {
      * @param sequence The SIP URI sequence
      */
     public SipUri(String sequence) {
-        parseSip(sequence);
+        parseSipRegex(sequence);
     }
 
     /**
@@ -50,12 +52,15 @@ public class SipUri {
      * parameter.
      *
      * @param sequence SIP URI string sequence.
+     * @since 04/12/18
+     * @deprecated use {@link #parseSipRegex(String sequence)} instead.
      */
+    @Deprecated
     public void parseSip(String sequence) {
 
         /*
          * This split separates the sip/sips parameter from the rest of the 
-         * sequence. T
+         * sequence. 
          */
         String[] schemeSplit = sequence.split(":", 2);
         scheme = schemeSplit[0];
@@ -130,6 +135,59 @@ public class SipUri {
 
         // Lastly, add the host.
         host = suffixSplit[0];
+    }
+
+    /**
+     * This function is a newer adaptation to the parser, to process a SIP URI sequence under regular expression schema.
+     * @param sequence SIP URI string sequence.
+     * @since 10/08/18
+     */
+    private void parseSipRegex(String sequence) {
+        // Defining the regular expression to define the structure of a SIP URI.
+        String regex = "^(sips?)(:)([[\\S]&&[^@:]]*)([;@:])([[\\S]&&[^@\\\\?:]]*)([;@\\\\?]?)([[\\S]&&[^;:]]*)([;\\\\?]?)([[\\S]&&[^\\\\?;:]]*)([\\\\?]?)$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher patternMatcher = pattern.matcher(sequence);
+
+        // If there is a matc parse the SIP.
+        if (patternMatcher.find()) {
+            
+            this.scheme = patternMatcher.group(1);
+
+            // Parse SIP according to specification guidline.
+            for (int i = 1; i < patternMatcher.groupCount(); i++) {
+                
+                // Following the "@" is the host.
+                if (patternMatcher.group(i).equals("@")) {
+                    this.host = patternMatcher.group(i + 1);
+                // Following the ";" are the uri-parameters.
+                } else if (patternMatcher.group(i).equals(";")) {
+                    this.uriParameters = patternMatcher.group(i + 1);
+                // Following the "?" are the headers.
+                } else if (patternMatcher.group(i).equals("?")) {
+                    this.headers = patternMatcher.group(i + 1);
+                // If there is a password, it is after the 4th group in the regular expression above.
+                } else if (i == 4 && patternMatcher.group(i).equals(":")) {
+                    this.password = patternMatcher.group(i + 1);
+                } else if (sequence.contains("@") && patternMatcher.group(i).equals(":")) {
+                    this.user = patternMatcher.group(i + 1);
+                // If the sequence contains no "@", then the host is after the ":".
+                } else if (!(sequence.contains("@")) && patternMatcher.group(i).equals(":")) {
+                    this.host = patternMatcher.group(i + 1);
+                }
+            }
+            
+            // By default, if scheme = "sip" then port == 5060, if scheme = "sips" then port 5061.
+            // Unless stated otherwise.
+            if (this.scheme.equals("sip")) {
+                port = "5060";
+            } else if (this.scheme.equals("sips")) {
+                port = "5061";
+            }
+        
+        } else {
+            System.out.println("Invalid SIP syntax.");
+        }
     }
 
     /**

@@ -1,3 +1,5 @@
+package main;
+
 import protocol.SipUri;
 
 /**
@@ -7,12 +9,14 @@ import protocol.SipUri;
  *
  * @author Logan Stanfield
  * @since 04/12/2018
- * @version 0.1.0
+ * @version 0.2.0
  */
 public class Main {
 
     // Main method.
     public static void main(String[] args) {
+        long startTime = System.nanoTime();
+        
         String testUri = "sip:alice@atlanta.com";
         String testUri2 = "sip:alice:secretword@atlanta.com;transport=tcp";
         String testUri3 = "sips:alice@atlanta.com?subject=project%20x&priority=urgent";
@@ -54,8 +58,16 @@ public class Main {
          */
         String testUri8 = "sip:alice;day=tuesday@atlanta.com";
 
+        // NON VALID SIP URIs:
+        String testUri9 = "sip:user:password:somethingelse@outlook.com";
+        String testUri10 = "sipps:user@outlook.com;parameters?headers";
+        
         // Declaration and instantiation of the SipUri object.
-        SipUri sipUri = new SipUri(testUri8);
+        SipUri sipUri = new SipUri(testUri3);
         System.out.println(sipUri.toString());
+        
+        long endTime = System.nanoTime();
+        long runtimeDuration = endTime - startTime;
+        System.out.println("Duration: " + runtimeDuration);
     }
 }
